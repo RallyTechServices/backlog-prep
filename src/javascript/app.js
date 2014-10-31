@@ -71,6 +71,18 @@ Ext.define('CustomApp', {
                 dataIndex: '__count_backlog',
                 menuDisabled: true,
                 leaves_only: true
+            },
+            {
+                text: 'Size of Backlog Stories',
+                dataIndex: '__size_backlog',
+                menuDisabled: true,
+                leaves_only: true
+            },
+            {
+                text: '# Defaulted Stories',
+                dataIndex: '__count_defaulted',
+                menuDisabled: true,
+                leaves_only: true
             }
         ];
        
@@ -118,18 +130,29 @@ Ext.define('CustomApp', {
             context: {
                 project: project.get('_ref')
             },
-            fetch: ['ObjectID','AcceptedDate'],
+            fetch: ['ObjectID','AcceptedDate','PlanEstimate','ScheduleState'],
             limit:'Infinity',
             listeners:  {
                 scope: this,
                 load: function(store, records, success){
                     var count_backlog = 0;
+                    var count_defaulted = 0;
+                    var size_backlog = 0;
+                    
                     Ext.Array.each(records,function(record){
-                        if ( !record.get('AcceptedDate') ) {
+                        if ( !record.get('AcceptedDate') && record.get('ScheduleState') != 'Completed') {
+                            var size = record.get('PlanEstimate') || 0;
+                            if ( size == 0 ) {
+                                size = 8;
+                                count_defaulted++;
+                            }
                             count_backlog++;
+                            size_backlog += size;
                         }
                     });
                     project.set('__count_backlog', count_backlog);
+                    project.set('__size_backlog', size_backlog);
+                    project.set('__count_defaulted', count_defaulted);
                }
            }
         });

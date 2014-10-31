@@ -1,9 +1,12 @@
 #Backlog Preparation
 
 This is a quick tree grid that compares the backlog (here defined as
-items not yet accepted, regardless of scheduling) against historical
+items not yet accepted and not completed, regardless of scheduling) against historical
 velocity to see if the backlog refinement is keeping up with progress
-for the team to be ready to pull.
+for the team to be ready to pull.  Defects are ignored.
+
+If a story has no size, it assigned 8 by default and the number of stories
+set to 8 is listed as "Stories Defaulted".
 
 ## Development Notes
 
