@@ -226,16 +226,16 @@
             }
         },this);
         
-        if ( parent_oids.length > 0 ) {
-            var number_of_oids = parent_oids.length;
-            if (number_of_oids > 0 ) {
-                for ( var i=0; i<number_of_oids; i+=this.targetChunk ) {
-                    var chunk_array = parent_oids.slice(i,i+this.targetChunk);
-                    promises.push(this._fetchByArrayOfValues('defect',chunk_array,"TestCase.ObjectID"));
-                }
-            }
-            
-        }
+//        if ( parent_oids.length > 0 ) {
+//            var number_of_oids = parent_oids.length;
+//            if (number_of_oids > 0 ) {
+//                for ( var i=0; i<number_of_oids; i+=this.targetChunk ) {
+//                    var chunk_array = parent_oids.slice(i,i+this.targetChunk);
+//                    promises.push(this._fetchByArrayOfValues('defect',chunk_array,"TestCase.ObjectID"));
+//                }
+//            }
+//            
+//        }
             
         if (promises.length > 0) {
             Deft.Promise.all(promises).then({
