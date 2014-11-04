@@ -289,7 +289,7 @@
     },
     _fetchCollection: function(parent,children_field){
         var deferred = Ext.create('Deft.Deferred');
-        this.logger.log("_fetchCollection",children_field);
+        //this.logger.log("_fetchCollection",children_field);
         
         var fields_to_fetch = this._getFetchNames();
         
@@ -297,6 +297,7 @@
             parent.getCollection(children_field,{
                 autoLoad: true,
                 fetch: fields_to_fetch,
+                filters: [{ property:'State',value:'Open'}],
                 listeners: {
                     scope: this,
                     load: function(store,records,success){
@@ -317,7 +318,7 @@
         if ( !deferred ) {
             deferred = Ext.create('Deft.Deferred');
         }
-        this.logger.log('fetched_items:',fetched_items);
+        //this.logger.log('fetched_items:',fetched_items);
         var fetched_oids = Ext.Object.getKeys(fetched_items);
         
         var parents_by_type = {};
@@ -438,7 +439,7 @@
         return null;
     },
     _fetchByArrayOfValues:function(model_name,oids,field_name){
-        this.logger.log("_fetchByArrayOfValues (", model_name, ",", oids.length, ",", field_name ,")");
+        //this.logger.log("_fetchByArrayOfValues (", model_name, ",", oids.length, ",", field_name ,")");
         var deferred = Ext.create('Deft.Deferred');
         var filters = Ext.create('Rally.data.wsapi.Filter',{property:field_name,value:oids[0]});
         
@@ -471,7 +472,7 @@
         return deferred.promise;
     },
     _fetchItemsByOIDArray:function(model_name,oids){
-        this.logger.log("_fetchItemsByOIDArray (", oids.length, ")");
+        //this.logger.log("_fetchItemsByOIDArray (", oids.length, ")");
         var deferred = Ext.create('Deft.Deferred');
         var filters = Ext.create('Rally.data.wsapi.Filter',{property:'ObjectID',value:oids[0]});
         
@@ -519,7 +520,7 @@
     },
 
     _makeStoreAndShowGrid: function(ordered_items){
-        this.logger.log('_makeStoreAndShowGrid',ordered_items);
+        //this.logger.log('_makeStoreAndShowGrid',ordered_items);
         if ( ordered_items.length == 0 ) {
             this.add({
                 xtype:'container',

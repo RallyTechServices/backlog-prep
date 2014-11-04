@@ -34,12 +34,12 @@ Ext.define('CustomApp', {
                     this.setLoading('Building tree...');
                 },
                 aftertree:function(tree_container, tree){
-                    tree.expandAll();
                     this.setLoading("Finding Backlog...");
                     this._getUndoneStories().then({
                         scope: this,
                         success: function(stories) {
                             var leaves = this._getLeavesFromTree(tree);
+                            this.logger.log("Found ", leaves.length, " leaves");
                             this.setLoading('Calculating Velocities...');
                             var promises = [];
                             Ext.Array.each(leaves, function(leaf){
@@ -48,6 +48,8 @@ Ext.define('CustomApp', {
                             Deft.Promise.all(promises).then({
                                 scope: this,
                                 success: function() {
+                                    this.logger.log("--Done--");
+                                    tree.expandAll();
                                     this.setLoading(false);
                                 },
                                 failure: function(message) {
@@ -83,7 +85,7 @@ Ext.define('CustomApp', {
                 renderer: name_renderer,
                 width: 250,
                 menuDisabled: true,
-                otherFields: ['FormattedID','ObjectID']
+                otherFields: ['FormattedID','ObjectID','State']
             },
             
                 {
@@ -167,6 +169,7 @@ Ext.define('CustomApp', {
         return available_height;
     },
     _getLeavesFromTree:function(tree){
+        this.logger.log("_getLeavesFromTree");
         var store = tree.getStore();
         var root = store.getRootNode();
         return this._getLeavesFromNode(root);
@@ -180,12 +183,14 @@ Ext.define('CustomApp', {
             } else {
                 leaf_array = Ext.Array.merge(leaf_array, this._getLeavesFromNode(child_node));
             }
+    
         },this);
         
         return leaf_array;
     },
     _getUndoneStories: function() {
         var deferred = Ext.create('Deft.Deferred');
+        this.logger.log("_getUndoneStories");
         var leaf_filter = Ext.create('Rally.data.wsapi.Filter',{ property: 'DirectChildrenCount', value: 0 });
         var not_accepted_filter = Ext.create('Rally.data.wsapi.Filter',{ property: 'AcceptedDate', operator: '=', value: null });
         var not_completed_filter = Ext.create('Rally.data.wsapi.Filter',{ property:'ScheduleState', operator: '!=', value: 'Completed'});
