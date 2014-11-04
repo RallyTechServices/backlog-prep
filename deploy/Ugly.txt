@@ -3,10 +3,10 @@
 <head>
     <title>Backlog Preparation</title>
     <!--  (c) 2013 Rally Software Development Corp.  All Rights Reserved. -->
-    <!--  Build Date: Sun Nov 02 2014 09:29:27 GMT-0800 (PST) -->
+    <!--  Build Date: Mon Nov 03 2014 18:10:16 GMT-0800 (PST) -->
     
     <script type="text/javascript">
-        var APP_BUILD_DATE = "Sun Nov 02 2014 09:29:27 GMT-0800 (PST)";
+        var APP_BUILD_DATE = "Mon Nov 03 2014 18:10:16 GMT-0800 (PST)";
         var CHECKSUM = [%= checksum %];
     </script>
     
