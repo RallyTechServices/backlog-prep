@@ -35,7 +35,7 @@ Ext.define('CustomApp', {
                 },
                 aftertree:function(tree_container, tree){
                     this.setLoading("Finding Backlog...");
-                    this._getUndoneStories().then({
+                    this._getUndoneStoriesUsingLookback().then({
                         scope: this,
                         success: function(stories) {
                             var leaves = this._getLeavesFromTree(tree);
@@ -213,6 +213,37 @@ Ext.define('CustomApp', {
         });
         return deferred.promise;
     },
+    _getUndoneStoriesUsingLookback: function() {
+        var deferred = Ext.create('Deft.Deferred');
+        this.logger.log("_getUndoneStoriesUsingLookback");
+        var leaf_filter = Ext.create('Rally.data.wsapi.Filter',{ property: 'DirectChildrenCount', value: 0 });
+        var not_accepted_filter = Ext.create('Rally.data.wsapi.Filter',{ property: 'AcceptedDate', operator: '=', value: null });
+        var not_completed_filter = Ext.create('Rally.data.wsapi.Filter',{ property:'ScheduleState', operator: '!=', value: 'Completed'});
+        
+        var not_done_filter = not_accepted_filter.and(not_completed_filter);
+        
+        var filters = leaf_filter.and(not_done_filter);
+        Ext.create('Rally.data.lookback.SnapshotStore', {
+            autoLoad: true,
+            filters:[
+                { property: '__At', value: 'current'},
+                { property: '_TypeHierarchy', value: 'HierarchicalRequirement'},
+                { property: 'Children', value: null },
+                { property: '_ProjectHierarchy', value: this.getContext().getProject().ObjectID },
+                { property: 'ScheduleState', operator: '<', value: 'Completed' }
+            ],
+           
+            fetch: ['ObjectID','AcceptedDate','PlanEstimate','Project'],
+            listeners:  {
+                scope: this,
+                load: function(store, records, success){
+                    this.logger.log("Found ", records.length, " backlog items" );
+                    deferred.resolve(records);
+                }
+           }
+        });
+        return deferred.promise;
+    },
     _setCalculatedData: function(project,stories){
         var deferred = Ext.create('Deft.Deferred');
         var backlog_by_count = 0;
@@ -220,7 +251,10 @@ Ext.define('CustomApp', {
         var count_defaulted = 0;
         
         Ext.Array.each(stories,function(story){
-            if ( story.get('Project').ObjectID == project.get('ObjectID')) {
+            // wsapi -> var project_oid = story.get('Project').ObjectID;
+            var project_oid = story.get('Project');
+            
+            if (  project_oid == project.get('ObjectID')) {
                 var size = story.get('PlanEstimate') || 0;
                 if ( size == 0 ) {
                     size = 8;
